@@ -1,0 +1,117 @@
+@extends('layouts.app')
+
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/recipes.css') }}">
+@endsection
+
+@section('content')
+<h1>レシピ編集</h1>
+
+<div class="form-container">
+    <form action="{{ route('recipes.update', $recipe->id) }}" method="POST" class="recipe-form">
+        @csrf
+        @method('PUT')
+
+        <div class="form-group">
+            <label for="name">レシピ名 <span class="required">*</span></label>
+            <input type="text" id="name" name="name" value="{{ old('name', $recipe->name) }}" required class="form-input">
+            @error('name')
+            <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-section">
+            <h3>既存の材料</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">✓をつけた材料がレシピに含まれます。チェックを外すと削除されます。</p>
+            <div class="materials-checklist">
+                @foreach($materials as $material)
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input
+                            type="checkbox"
+                            name="material_ids[]"
+                            value="{{ $material->id }}"
+                            {{ in_array($material->id, old('material_ids', $recipeMaterialIds)) ? 'checked' : '' }}>
+                        <span class="material-name">{{ $material->name }}</span>
+                        <span class="material-unit">({{ $material->unit }})</span>
+                    </label>
+                    <input
+                        type="number"
+                        name="materials[{{ $material->id }}]"
+                        step="0.001"
+                        value="{{ old('materials.' . $material->id, $recipeMaterials[$material->id] ?? 0) }}"
+                        placeholder="数量を入力"
+                        class="quantity-input">
+                    @error('materials.' . $material->id)
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>新しい材料を追加</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">新しい材料を作成して、このレシピに追加します。</p>
+            <div class="new-material-section">
+                <div class="form-group">
+                    <label for="new_material_name">材料名</label>
+                    <input
+                        type="text"
+                        id="new_material_name"
+                        name="new_material_name"
+                        value="{{ old('new_material_name', '') }}"
+                        placeholder="例: 塩、砂糖など"
+                        class="form-input">
+                    @error('new_material_name')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="new_material_unit">単位</label>
+                    <input
+                        type="text"
+                        id="new_material_unit"
+                        name="new_material_unit"
+                        value="{{ old('new_material_unit', '') }}"
+                        placeholder="例: g, ml, 個など"
+                        class="form-input">
+                    @error('new_material_unit')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="new_material_quantity">このレシピでの数量</label>
+                    <input
+                        type="number"
+                        id="new_material_quantity"
+                        name="new_material_quantity"
+                        step="0.001"
+                        value="{{ old('new_material_quantity', '') }}"
+                        placeholder="例: 100"
+                        class="form-input">
+                    @error('new_material_quantity')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <p style="font-size: 12px; color: #999; margin-top: 10px;">
+                    💡 材料名と単位が空白の場合は、新しい材料は追加されません
+                </p>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">✏️ 更新</button>
+            <a href="{{ route('recipes.index') }}" class="btn btn-secondary">キャンセル</a>
+        </div>
+    </form>
+</div>
+
+<div class="action-buttons">
+    <a href="{{ route('index') }}" class="btn btn-secondary">← トップに戻る</a>
+</div>
+
+@endsection

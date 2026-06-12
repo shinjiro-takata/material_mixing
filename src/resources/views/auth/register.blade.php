@@ -1,0 +1,39 @@
+@extends('layouts.app')
+
+@section('content')
+<form method="POST" action="/register">
+    @csrf
+
+    <div>
+        <label for="name">名前</label>
+        <input id="name" type="text" name="name" required value="{{ old('name') }}" autofocus>
+        @error('name')
+            <span>{{ $message }}</span>
+        @enderror
+    </div>
+    <div>
+        <label for="email">メールアドレス</label>
+        <input id="email" type="email" name="email" required value="{{ old('email') }}">
+        @error('email')
+            <span>{{ $message }}</span>
+        @enderror
+    </div>
+    <div>
+        <label for="password">パスワード</label>
+        <input id="password" type="password" name="password" required>
+        @error('password')
+            <span>{{ $message }}</span>
+        @enderror
+    </div>
+    <div>
+        <label for="password_confirmation">パスワード確認</label>
+        <input id="password_confirmation" type="password" name="password_confirmation" required>
+        @error('password_confirmation')
+            <span>{{ $message }}</span>
+        @enderror
+    </div>
+    <button type="submit">
+        登録する
+    </button>
+</form>
+@endsection
