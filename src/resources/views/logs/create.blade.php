@@ -36,7 +36,7 @@
 
             <div class="form-group">
                 <label for="weighing_date">計量日時</label>
-                <input type="datetime-local" id="weighing_date" name="weighed_at" value="{{ old('weighed_at') }}" required>
+                <input type="datetime-local" id="weighing_date" name="weighed_at" value="{{ old('weighed_at', $defaultDateTime ?? '') }}" required>
                 @error('weighed_at')
                 <div class="error">{{ $message }}</div>
                 @enderror

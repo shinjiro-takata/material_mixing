@@ -17,12 +17,13 @@ class WeighingLogController extends Controller
         $selectedRecipeId = request('recipe_id');
         $recipes = Recipe::all();
         $recipe = null;
+        $defaultDateTime = now()->format('Y-m-d\TH:i');
 
         if ($selectedRecipeId) {
             $recipe = Recipe::with('materials')->find($selectedRecipeId);
         }
 
-        return view('logs.create', compact('recipes', 'recipe', 'selectedRecipeId'));
+        return view('logs.create', compact('recipes', 'recipe', 'selectedRecipeId', 'defaultDateTime'));
     }
 
     public function store(StoreWeighingLogRequest $request)
