@@ -58,6 +58,30 @@ class WeighingLogController extends Controller
             })
             ->get();
 
+        // 許容範囲判定ロジック
+        $logs = $logs->map(function ($log) {
+            $material_tolerances = [];
+
+            foreach ($log->materials as $material) {
+                $recipeMaterial = $log->recipe->materials->where('id', $material->id)->first();
+                $actualQuantity = $material->pivot->actual_quantity;
+                $isOutOfTolerance = false;
+
+                if ($actualQuantity && $recipeMaterial && $recipeMaterial->pivot->tolerance > 0) {
+                    $standard = $recipeMaterial->pivot->quantity;
+                    $tolerance = $recipeMaterial->pivot->tolerance;
+                    $minValue = $standard - $tolerance;
+                    $maxValue = $standard + $tolerance;
+                    $isOutOfTolerance = $actualQuantity < $minValue || $actualQuantity > $maxValue;
+                }
+
+                $material_tolerances[$material->id] = $isOutOfTolerance;
+            }
+
+            $log->material_tolerances = $material_tolerances;
+            return $log;
+        });
+
         $recipes = Recipe::all();
         $allMaterials = Material::all();
 
