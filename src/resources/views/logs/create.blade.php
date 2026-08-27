@@ -50,6 +50,9 @@
                         <label for="material_{{ $material->id }}" class="material-label">
                             {{ $material->name }}
                             <span class="material-spec">{{ $material->formatted_quantity }}{{ $material->unit }}</span>
+                            @if($material->pivot->tolerance)
+                            <span class="tolerance-spec">(±{{ $material->pivot->tolerance }}{{ $material->unit }})</span>
+                            @endif
                         </label>
                         <input
                             type="number"
@@ -58,7 +61,9 @@
                             step="0.001"
                             value="{{ old('materials.' . $material->id, 0) }}"
                             required
-                            class="material-input">
+                            class="material-input"
+                            data-standard="{{ $material->formatted_quantity }}"
+                            data-tolerance="{{ $material->pivot->tolerance ?? '' }}">
                         <span class="material-unit">{{ $material->unit }}</span>
                         @error('materials.' . $material->id)
                         <div class="error">{{ $message }}</div>
@@ -92,5 +97,57 @@
 <div class="action-buttons">
     <a href="{{ route('index') }}" class="btn btn-secondary">← トップに戻る</a>
 </div>
+
+<script>
+    // 許容範囲チェック - DOMContentLoaded後に実行
+    document.addEventListener('DOMContentLoaded', function() {
+        const setupToleranceCheck = () => {
+            document.querySelectorAll('.material-input').forEach(input => {
+                const checkTolerance = () => {
+                    const standard = parseFloat(input.dataset.standard);
+                    const tolerance = parseFloat(input.dataset.tolerance);
+                    const actual = parseFloat(input.value);
+
+                    console.log('Checking:', {
+                        standard,
+                        tolerance,
+                        actual
+                    });
+
+                    if (isNaN(standard) || isNaN(actual)) {
+                        input.classList.remove('out-of-tolerance');
+                        return;
+                    }
+
+                    // 許容範囲が設定されている場合のみチェック
+                    if (!isNaN(tolerance) && tolerance > 0) {
+                        const minValue = standard - tolerance;
+                        const maxValue = standard + tolerance;
+
+                        console.log('Range:', {
+                            minValue,
+                            maxValue,
+                            actual
+                        });
+
+                        if (actual < minValue || actual > maxValue) {
+                            input.classList.add('out-of-tolerance');
+                        } else {
+                            input.classList.remove('out-of-tolerance');
+                        }
+                    } else {
+                        input.classList.remove('out-of-tolerance');
+                    }
+                };
+
+                input.addEventListener('input', checkTolerance);
+                // ページロード時にもチェック
+                checkTolerance();
+            });
+        };
+
+        setupToleranceCheck();
+    });
+</script>
 
 @endsection

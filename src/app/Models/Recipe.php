@@ -17,13 +17,11 @@ class Recipe extends Model
 
     public function materials()
     {
-        return $this->belongsToMany(Material::class, 'recipe_materials')->withPivot('quantity');
+        return $this->belongsToMany(Material::class, 'recipe_materials')->withPivot('quantity', 'tolerance');
     }
 
     public function productionLogs()
     {
         return $this->hasMany(ProductionLog::class);
     }
-
-    
 }

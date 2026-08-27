@@ -35,7 +35,10 @@ class RecipeController extends Controller
         $materials = [];
         foreach ($request->material_ids as $material_id) {
             if (isset($request->materials[$material_id])) {
-                $materials[$material_id] = ['quantity' => $request->materials[$material_id]];
+                $materials[$material_id] = [
+                    'quantity' => $request->materials[$material_id],
+                    'tolerance' => $request->tolerances[$material_id] ?? null
+                ];
             }
         }
         $recipe->materials()->attach($materials);
@@ -49,8 +52,10 @@ class RecipeController extends Controller
         $recipeMaterialIds = $recipe->materials->pluck('id')->toArray();
         // このレシピの各材料ごとの数量（input value 埋め込み用）
         $recipeMaterials = $recipe->materials->pluck('pivot.quantity', 'id')->toArray();
+        // このレシピの各材料ごとの許容範囲（input value 埋め込み用）
+        $recipeTolerance = $recipe->materials->pluck('pivot.tolerance', 'id')->toArray();
 
-        return view('recipes.edit', compact('recipe', 'materials', 'recipeMaterialIds', 'recipeMaterials'));
+        return view('recipes.edit', compact('recipe', 'materials', 'recipeMaterialIds', 'recipeMaterials', 'recipeTolerance'));
     }
 
     public function update(UpdateRecipeRequest $request, Recipe $recipe)
@@ -81,7 +86,10 @@ class RecipeController extends Controller
         $syncArray = [];
         foreach ($request->material_ids as $material_id) {
             if (isset($request->materials[$material_id])) {
-                $syncArray[$material_id] = ['quantity' => $request->materials[$material_id]];
+                $syncArray[$material_id] = [
+                    'quantity' => $request->materials[$material_id],
+                    'tolerance' => $request->tolerances[$material_id] ?? null
+                ];
             }
         }
         $recipe->materials()->sync($syncArray);

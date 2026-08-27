@@ -18,12 +18,11 @@ class Material extends Model
 
     public function recipes()
     {
-        return $this->belongsToMany(Recipe::class, 'recipe_materials')->withPivot('quantity');
+        return $this->belongsToMany(Recipe::class, 'recipe_materials')->withPivot('quantity', 'tolerance');
     }
 
     public function getFormattedQuantityAttribute()
     {
         return number_format($this->pivot->quantity, 3);
     }
-
 }

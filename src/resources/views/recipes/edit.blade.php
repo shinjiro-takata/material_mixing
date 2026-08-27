@@ -42,6 +42,13 @@
                         value="{{ old('materials.' . $material->id, $recipeMaterials[$material->id] ?? 0) }}"
                         placeholder="数量を入力"
                         class="quantity-input">
+                    <input
+                        type="number"
+                        name="tolerances[{{ $material->id }}]"
+                        step="0.001"
+                        value="{{ old('tolerances.' . $material->id, $recipeTolerance[$material->id] ?? '') }}"
+                        placeholder="許容範囲"
+                        class="tolerance-input">
                     @error('materials.' . $material->id)
                     <div class="error">{{ $message }}</div>
                     @enderror
