@@ -70,7 +70,25 @@
                 <td>{{ $log->recipe->name }}</td>
                 <td>{{ $log->notes ?: '-' }}</td>
                 @foreach($allMaterials as $material)
-                <td>{{ $log->materials->where('id', $material->id)->first()?->pivot->actual_quantity ?? '-' }}</td>
+                @php
+                    $recipeMaterial = $log->recipe->materials->where('id', $material->id)->first();
+                    $actualQuantity = $log->materials->where('id', $material->id)->first()?->pivot->actual_quantity;
+                    $isOutOfTolerance = false;
+                    
+                    if ($actualQuantity && $recipeMaterial) {
+                        $standard = $recipeMaterial->pivot->quantity;
+                        $tolerance = $recipeMaterial->pivot->tolerance;
+                        
+                        if ($tolerance > 0) {
+                            $minValue = $standard - $tolerance;
+                            $maxValue = $standard + $tolerance;
+                            $isOutOfTolerance = $actualQuantity < $minValue || $actualQuantity > $maxValue;
+                        }
+                    }
+                @endphp
+                <td class="{{ $isOutOfTolerance ? 'out-of-tolerance-log' : '' }}">
+                    {{ $actualQuantity ?? '-' }}
+                </td>
                 @endforeach
             </tr>
             @empty

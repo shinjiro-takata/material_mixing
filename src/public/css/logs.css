@@ -97,6 +97,13 @@
     border-bottom: 2px solid #ddd;
 }
 
+/* Tolerance Out of Range - Log Table */
+td.out-of-tolerance-log {
+    background-color: #ffcccc;
+    color: #e74c3c;
+    font-weight: 600;
+}
+
 /* Material Input Form */
 .material-form-container {
     background-color: white;
