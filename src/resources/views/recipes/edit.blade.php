@@ -104,6 +104,21 @@
                     @enderror
                 </div>
 
+                <div class="form-group">
+                    <label for="new_material_tolerance">許容範囲</label>
+                    <input
+                        type="number"
+                        id="new_material_tolerance"
+                        name="new_material_tolerance"
+                        step="0.001"
+                        value="{{ old('new_material_tolerance', '') }}"
+                        placeholder="例: 5"
+                        class="form-input">
+                    @error('new_material_tolerance')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <p style="font-size: 12px; color: #999; margin-top: 10px;">
                     💡 材料名と単位が空白の場合は、新しい材料は追加されません
                 </p>

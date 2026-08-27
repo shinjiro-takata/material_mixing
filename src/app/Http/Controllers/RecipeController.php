@@ -32,6 +32,33 @@ class RecipeController extends Controller
     {
         $recipe = Recipe::create($request->validated());
 
+        // 新しい材料を追加
+        if ($request->new_material_name && $request->new_material_unit) {
+            $newMaterial = Material::firstOrCreate(
+                ['name' => $request->new_material_name, 'unit' => $request->new_material_unit],
+                ['name' => $request->new_material_name, 'unit' => $request->new_material_unit]
+            );
+            // $request->material_ids[]に新しい材料のIDを追加
+            $material_ids = $request->material_ids ?? [];
+            $material_ids[] = $newMaterial->id;
+            $request->merge(['material_ids' => $material_ids]);
+
+            // 新材料の数量と許容範囲を設定
+            $materials_data = $request->materials ?? [];
+            if ($request->new_material_quantity !== null) {
+                $materials_data[$newMaterial->id] = $request->new_material_quantity;
+            } else {
+                $materials_data[$newMaterial->id] = 0;
+            }
+            $request->merge(['materials' => $materials_data]);
+
+            $tolerances_data = $request->tolerances ?? [];
+            if ($request->new_material_tolerance !== null) {
+                $tolerances_data[$newMaterial->id] = $request->new_material_tolerance;
+            }
+            $request->merge(['tolerances' => $tolerances_data]);
+        }
+
         $materials = [];
         foreach ($request->material_ids as $material_id) {
             if (isset($request->materials[$material_id])) {
@@ -73,7 +100,7 @@ class RecipeController extends Controller
             $material_ids[] = $newMaterial->id;
             $request->merge(['material_ids' => $material_ids]);
 
-            // 新材料の数量を設定
+            // 新材料の数量と許容範囲を設定
             $materials = $request->materials ?? [];
             if ($request->new_material_quantity !== null) {
                 $materials[$newMaterial->id] = $request->new_material_quantity;
@@ -81,6 +108,12 @@ class RecipeController extends Controller
                 $materials[$newMaterial->id] = 0;
             }
             $request->merge(['materials' => $materials]);
+
+            $tolerances = $request->tolerances ?? [];
+            if ($request->new_material_tolerance !== null) {
+                $tolerances[$newMaterial->id] = $request->new_material_tolerance;
+            }
+            $request->merge(['tolerances' => $tolerances]);
         }
 
         $syncArray = [];

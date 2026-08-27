@@ -56,6 +56,74 @@
             </div>
         </div>
 
+        <div class="form-section">
+            <h3>新しい材料を追加</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">新しい材料を作成して、このレシピに追加します。</p>
+            <div class="new-material-section">
+                <div class="form-group">
+                    <label for="new_material_name">材料名</label>
+                    <input
+                        type="text"
+                        id="new_material_name"
+                        name="new_material_name"
+                        value="{{ old('new_material_name', '') }}"
+                        placeholder="例: 塩、砂糖など"
+                        class="form-input">
+                    @error('new_material_name')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="new_material_unit">単位</label>
+                    <input
+                        type="text"
+                        id="new_material_unit"
+                        name="new_material_unit"
+                        value="{{ old('new_material_unit', '') }}"
+                        placeholder="例: g, ml, 個など"
+                        class="form-input">
+                    @error('new_material_unit')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="new_material_quantity">このレシピでの数量</label>
+                    <input
+                        type="number"
+                        id="new_material_quantity"
+                        name="new_material_quantity"
+                        step="0.001"
+                        value="{{ old('new_material_quantity', '') }}"
+                        placeholder="例: 100"
+                        class="form-input">
+                    @error('new_material_quantity')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="new_material_tolerance">許容範囲</label>
+                    <input
+                        type="number"
+                        id="new_material_tolerance"
+                        name="new_material_tolerance"
+                        step="0.001"
+                        value="{{ old('new_material_tolerance', '') }}"
+                        placeholder="例: 5"
+                        class="form-input">
+                    @error('new_material_tolerance')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <p style="font-size: 12px; color: #999; margin-top: 10px;">
+                    💡 材料名と単位が空白の場合は、新しい材料は追加されません
+                </p>
+            </div>
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn">✅ 作成</button>
             <a href="{{ route('recipes.index') }}" class="btn btn-secondary">キャンセル</a>
