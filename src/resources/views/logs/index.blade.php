@@ -10,9 +10,12 @@
 <div class="filter-section">
     <form action="{{ route('logs.index') }}" method="GET" class="search-form">
         <div class="search-form__group">
-            <label for="start_date" class="search-form__label">期間</label>
+            <label for="start_date" class="search-form__label">開始日</label>
             <input class="search-form__input search-form__input--date" type="date" id="start_date" name="start_date" value="{{ request('start_date') }}">
-            <span class="search-form__separator">〜</span>
+        </div>
+
+        <div class="search-form__group">
+            <label for="end_date" class="search-form__label">終了日</label>
             <input class="search-form__input search-form__input--date" type="date" id="end_date" name="end_date" value="{{ request('end_date') }}">
         </div>
 
@@ -55,9 +58,9 @@
         </thead>
         <tbody>
             <tr class="total-row">
-                <td colspan="3"><strong>合計</strong></td>
+                <td colspan="3" data-label="合計"><strong>合計</strong></td>
                 @foreach($allMaterials as $material)
-                <td>
+                <td data-label="{{ $material->name }}">
                     <strong>
                         {{ number_format($logs->sum(function($log) use($material) { return $log->materials->where('id', $material->id)->first()?->pivot->actual_quantity ?? 0; }), 3) }}
                     </strong>
@@ -66,11 +69,11 @@
             </tr>
             @forelse($logs as $log)
             <tr>
-                <td>{{ $log->weighed_at }}</td>
-                <td>{{ $log->recipe->name }}</td>
-                <td>{{ $log->notes ?: '-' }}</td>
+                <td data-label="日時">{{ $log->weighed_at }}</td>
+                <td data-label="レシピ">{{ $log->recipe->name }}</td>
+                <td data-label="備考">{{ $log->notes ?: '-' }}</td>
                 @foreach($allMaterials as $material)
-                <td class="{{ ($log->material_tolerances[$material->id] ?? false) ? 'out-of-tolerance-log' : '' }}">
+                <td data-label="{{ $material->name }}" class="{{ ($log->material_tolerances[$material->id] ?? false) ? 'out-of-tolerance-log' : '' }}">
                     {{ $log->materials->where('id', $material->id)->first()?->pivot->actual_quantity ?? '-' }}
                 </td>
                 @endforeach
